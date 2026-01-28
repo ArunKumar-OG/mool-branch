@@ -24,6 +24,31 @@ app.get('/', (c) => {
   })
 })
 
+app.get('/health', async (c) => {
+  try {
+    if (c.env?.DB) {
+      await c.env.DB.prepare('SELECT 1').first()
+    }
+
+    return c.json({
+      status: 'ok',
+      timestamp: new Date().toISOString()
+    })
+  } catch (err) {
+    return c.json(
+      {
+        status: 'error',
+        timestamp: new Date().toISOString()
+      },
+      503
+    )
+  }
+})
+
+
+
+
+
 app.post('/webhooks/auth0', auth0Webhook)
 app.get('/api/media/my-uploads', getMyUploads)
 app.get('/api/media/count', getMediaCount)
